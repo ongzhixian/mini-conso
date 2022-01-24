@@ -16,16 +16,16 @@ AppStartup.ConfigureServices(builder.ConfigureServices);
 
 Console.WriteLine("Buiding application host...");
 
-IHost? host = builder.Build();
+var host = builder.Build();
 
 host.Start(); // vs host.Run
 
 var logger = host.Services.GetRequiredService<ILogger<Program>>();
 
-logger.LogInformation("Running application...");
+LogProgramMessage.ApplicationStart(logger, null);
 
 var service = host.Services.GetRequiredService<ExampleService>();
 
 await service.DoWorkAsync();
 
-logger.LogInformation("Application end.");
+LogProgramMessage.ApplicationEnd(logger, null);

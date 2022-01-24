@@ -93,3 +93,31 @@ https://github.com/dotnet/templating/wiki
 
 Json Template Schema
 http://json.schemastore.org/template
+
+
+## 
+
+```ps1
+$bytes = [Text.Encoding]::UTF8.GetBytes("mytext")
+$b = [System.Security.Cryptography.SHA1CryptoServiceProvider]::new().ComputeHash([Text.Encoding]::UTF8.GetBytes("MiniTools.Web.Controllers.LoginController"))
+$ans = 0
+for ($i = 0; $i -lt $b.Length; $i++) {
+    # Write-Host $($b[$i] * ($i + 1))
+    $ans = $ans + $($b[$i] * ($i + 1))
+}
+
+"$ans$($ans % 11)" | Set-Clipboard
+Write-Host "Final: $ans$($ans % 11)" 
+```
+
+```ps1: one-line equivalent
+$w,$s=0; [System.Security.Cryptography.SHA1CryptoServiceProvider]::new().ComputeHash([Text.Encoding]::UTF8.GetBytes("MiniTools.Web.Controllers.LoginController")).ForEach({$_*++$w}).ForEach({$s+=$_});"$s$($s%11)"
+```
+
+function calcId($text) {
+    $w,$s=0; [System.Security.Cryptography.SHA1CryptoServiceProvider]::new().ComputeHash([Text.Encoding]::UTF8.GetBytes($text)).ForEach({$_*++$w}).ForEach({$s+=$_});"$s$($s%11)" 
+}
+
+Test
+"MiniTools.Web.Controllers.LoginController" should give = 251394
+

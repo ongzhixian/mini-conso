@@ -15,10 +15,9 @@ namespace Conso.Tests.Services;
 [TestClass()]
 public class ExampleHttpClientTests
 {
-
-    Mock<ILogger<ExampleHttpClient>> mockLogger = new Mock<ILogger<ExampleHttpClient>>();
-    Mock<IOptionsMonitor<HttpClientSetting>> mockOptionsMonitor = new Mock<IOptionsMonitor<HttpClientSetting>>();
-    Mock<HttpMessageHandler> mockHttpMessageHandler = new Mock<HttpMessageHandler>();
+    private Mock<ILogger<ExampleHttpClient>> mockLogger = new();
+    private Mock<IOptionsMonitor<HttpClientSetting>> mockOptionsMonitor = new();
+    private Mock<HttpMessageHandler> mockHttpMessageHandler = new();
 
 
     [TestInitialize]
@@ -37,7 +36,7 @@ public class ExampleHttpClientTests
             BaseAddress = "https://localhost:7001"
         });
 
-        ExampleHttpClient client = new ExampleHttpClient(mockLogger.Object, new HttpClient(), mockOptionsMonitor.Object);
+        ExampleHttpClient client = new(mockLogger.Object, new HttpClient(), mockOptionsMonitor.Object);
 
         Assert.IsNotNull(client);
     }
@@ -60,8 +59,7 @@ public class ExampleHttpClientTests
                 Content = new StringContent("SomeContent")
             });
 
-        ExampleHttpClient client = new ExampleHttpClient(mockLogger.Object,
-            new HttpClient(mockHttpMessageHandler.Object), mockOptionsMonitor.Object);
+        ExampleHttpClient client = new(mockLogger.Object, new HttpClient(mockHttpMessageHandler.Object), mockOptionsMonitor.Object);
 
         var result = await client.GetWeatherForcastAsync();
 
