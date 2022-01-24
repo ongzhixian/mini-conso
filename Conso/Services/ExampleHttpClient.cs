@@ -16,11 +16,11 @@ public class ExampleHttpClient : IExampleHttpClient
 
     public ExampleHttpClient(ILogger<ExampleHttpClient> logger, HttpClient httpClient, IOptionsMonitor<HttpClientSetting> optionsMonitor)
     {
-        HttpClientSetting setting = optionsMonitor.Get("HttpClients:ExampleWeatherForecast");
+        HttpClientSetting httpClientSetting = optionsMonitor.Get("HttpClients:ExampleWeatherForecast") ?? throw new ArgumentNullException(nameof(httpClientSetting));
 
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         this.httpClient = httpClient;
-        httpClient.BaseAddress = new Uri(setting.BaseAddress);
+        httpClient.BaseAddress = new Uri(httpClientSetting.BaseAddress);
     }
 
     public async Task<string> GetWeatherForcastAsync()

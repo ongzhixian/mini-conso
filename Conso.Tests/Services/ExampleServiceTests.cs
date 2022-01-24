@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System.Threading.Tasks;
 
-namespace Conso.Tests;
+namespace Conso.Tests.Services;
 
 [TestClass]
 public class ExampleServiceTests
