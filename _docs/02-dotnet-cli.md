@@ -59,3 +59,37 @@ Note: `jb inspectcode` command-line treats hints as none.
 
 For a list of applicable code inspections see:
 https://www.jetbrains.com/help/resharper/Reference__Code_Inspections_CSHARP.html
+
+
+## Templates
+
+In the project root, create a `.template.config` directory.
+In `.template.config` directory, add a file call `template.json` with the following content:
+
+```json
+{
+    "$schema": "http://json.schemastore.org/template",
+    "author": "ONG Zhi Xian",
+    "classifications": [ "Common", "Console", "C#9" ],
+    "identity": "MiniConso.Conso",
+    "name": "Mini console project",
+    "shortName": "miniconsole",
+    "tags": {
+        "language": "C#",
+        "type": "project"
+    }
+}
+```
+
+At project root run the following command:
+
+`dotnet new --install .\`
+
+`dotnet new --uninstall .\`
+
+
+Json Template Wiki
+https://github.com/dotnet/templating/wiki
+
+Json Template Schema
+http://json.schemastore.org/template

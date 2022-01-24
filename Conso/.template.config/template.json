@@ -1,0 +1,12 @@
+{
+    "$schema": "http://json.schemastore.org/template",
+    "author": "ONG Zhi Xian",
+    "classifications": [ "Common", "Console", "C#9" ],
+    "identity": "MiniConso.Conso",
+    "name": "Mini console project",
+    "shortName": "miniconsole",
+    "tags": {
+        "language": "C#",
+        "type": "project"
+    }
+}
