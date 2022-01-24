@@ -11,9 +11,9 @@ namespace Conso.Tests;
 [TestClass]
 public class ExampleServiceTests
 {
-    Mock<ILogger<ExampleService>> mockLogger = new Mock<ILogger<ExampleService>>();
-    Mock<IOptions<ApplicationSetting>> mockOptions = new Mock<IOptions<ApplicationSetting>>();
-    Mock<IExampleHttpClient> mockHttpClient = new Mock<IExampleHttpClient>();
+    private Mock<IExampleHttpClient> mockHttpClient = new();
+    private Mock<ILogger<ExampleService>> mockLogger = new();
+    private Mock<IOptions<ApplicationSetting>> mockOptions = new();
 
     [TestInitialize]
     public void BeforeEachTest()
@@ -21,8 +21,8 @@ public class ExampleServiceTests
         mockLogger = new Mock<ILogger<ExampleService>>();
         mockOptions = new Mock<IOptions<ApplicationSetting>>();
         mockHttpClient = new Mock<IExampleHttpClient>();
-
     }
+
     [TestMethod]
     public async Task TestMethod1Async()
     {
@@ -33,9 +33,7 @@ public class ExampleServiceTests
         });
         mockHttpClient.Setup(m => m.GetWeatherForcastAsync()).ReturnsAsync("somestring");
 
-        ExampleService service = new ExampleService(mockLogger.Object, mockOptions.Object, mockHttpClient.Object);
-
-        await service.DoWorkAsync();
+        await new ExampleService(mockLogger.Object, mockOptions.Object, mockHttpClient.Object).DoWorkAsync();
 
         mockHttpClient.Verify(x => x.GetWeatherForcastAsync(), Times.Once);
     }

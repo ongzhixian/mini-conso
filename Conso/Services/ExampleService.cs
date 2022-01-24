@@ -19,9 +19,9 @@ public class ExampleService
 
     public async Task DoWorkAsync()
     {
-        logger.LogInformation("Version", options.Version);
+        logger.LogInformation("Version {version}", options.Version);
 
-        logger.LogInformation("RunType", options.RunType);
+        logger.LogInformation("RunType {runType}", options.RunType);
 
         var forecast = await client.GetWeatherForcastAsync();
 
