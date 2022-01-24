@@ -1,93 +1,57 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Conso.Models;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Reflection;
 
 namespace Conso.Services;
 
 internal static class AppStartupService
 {
-    internal static void ConfigureApp(Func<Action<HostBuilderContext, IConfigurationBuilder>, IHostBuilder> configureAppConfiguration)
-    {
+    internal static void ConfigureApp(Func<Action<HostBuilderContext, IConfigurationBuilder>, IHostBuilder> configureAppConfiguration) =>
         configureAppConfiguration.Invoke((hostingContext, configurationBuilder) =>
         {
             configurationBuilder.SetBasePath(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
             configurationBuilder.AddJsonFile("appsecrets.json", optional: true, reloadOnChange: true);
 
-            //IHostEnvironment hostingEnvironment = hostingContext.HostingEnvironment;
-            //var configuration = configurationBuilder.Build();
-            //Console.WriteLine("a {0}", configuration["MongoDb:ConnectionString"]);
+            if (hostingContext.HostingEnvironment.IsDevelopment())
+            {
+                // Print any configuration values we want to see here after building configuration
 
+                var configuration = configurationBuilder.Build();
+
+                foreach (var item in configuration.GetSection("Application:Debug:ConfigKeys").GetChildren().Select(r => r.Value))
+                {
+                    Console.WriteLine($"ConfigKey: [{item}] = [{configuration[item]}]");
+                }
+            }
         });
-    }
 
-    internal static void ConfigureServices(Func<Action<HostBuilderContext, IServiceCollection>, IHostBuilder> configureServices)
-    {
+    internal static void ConfigureServices(Func<Action<HostBuilderContext, IServiceCollection>, IHostBuilder> configureServices) =>
         configureServices.Invoke((host, services) =>
         {
             RegisterConfigurationInstances(host, services);
 
-            // # RegisterHttpClients(services)
+            // RegisterHttpClients(services)
 
-            //services.AddHttpClient()
-            //services.AddHttpClient<OandaApiService>();
+            services.AddHttpClient();
+            services.AddHttpClient<IExampleHttpClient, ExampleHttpClient>();
 
-            // # RegisterCaching(services)
-
+            // RegisterCaching(services)
             //services.AddMemoryCache(); // default IMemoryCache implementation
 
-            // # RegisterServices(services)
+            // RegisterServices(services)
+            services.AddSingleton<ExampleService>();
 
-            //services.AddSingleton<IMyService, MyService>()
-
-            // # RegisterHostedServices(services)
-
-            //services.AddHostedService<ExampleHostedService>()
-            //services.AddHostedService<ExampleBackgroundService>()
-            //services.AddHostedService<ExampleEventEmitterService>()
-
-            // # Azure (examples)
-
-            //services.AddHostedService<PubSubConsumerService>()
-            //services.AddHostedService<PubSubPublisherService>()
-            //services.AddHostedService<QueuePublisherService>()
-            //services.AddHostedService<QueueConsumerService>()
-            //services.AddHostedService<StorageTableService>()
-            //services.AddHostedService<StorageBlobService>()
-
-            // # Mongo (examples)
-
-            //services.AddHostedService<MongoDbMiniToolsService>()
-
-            // # Oanda 
-
-            //services.AddHostedService<TradeStrategyService>()
+            // RegisterHostedServices(services)
+            // N/A
 
         });
-    }
 
     private static void RegisterConfigurationInstances(HostBuilderContext host, IServiceCollection services)
     {
-        //services.Configure<MongoDbSetting>(host.Configuration.GetSection("mongodb:minitools"));
-        services.Configure<MongoDbSetting>(host.Configuration.GetSection("MongoDb"));
+        services.Configure<ApplicationSetting>(host.Configuration.GetSection("Application"));
 
-        // builder.Services.Configure<MongoDbSettings>(
-        //     "mongodb:minitools",
-        //     builder.Configuration.GetSection("mongodb:minitools")
-        //     );
+        services.Configure<HttpClientSetting>("HttpClients:ExampleWeatherForecast", host.Configuration.GetSection("HttpClients:ExampleWeatherForecast"));
 
-        // if (builder.Environment.IsDevelopment() && builder.Configuration.GetValue<bool>("Application:Startup:DumpDebugInfo"))
-        // {
-        //     Console.WriteLine("# Development debug info:");
-        //     Console.WriteLine("Jwt:ValidAudience    [{0}]", builder.Configuration["Jwt:ValidAudience"]);
-        //     Console.WriteLine("Jwt:ValidIssuer      [{0}]", builder.Configuration["Jwt:ValidIssuer"]);
-        //     Console.WriteLine("Jwt:SecretKey        [{0}]", builder.Configuration["Jwt:SecretKey"]);
-        // }
     }
-}
-
-
-public class MongoDbSetting
-{
-    public string ConnectionString { get; set; } = string.Empty;
 }
