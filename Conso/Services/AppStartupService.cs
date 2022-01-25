@@ -40,9 +40,11 @@ internal static class AppStartupService
             services.AddHttpClient<IAuthenticationHttpClient, AuthenticationHttpClient>();
 
             // RegisterCaching(services)
-            //services.AddMemoryCache(); // default IMemoryCache implementation
+            
+            services.AddMemoryCache(); // default IMemoryCache implementation
 
             // RegisterServices(services)
+            
             services.AddSingleton<ExampleService>();
             services.AddSingleton<AuthenticationService>();
 
