@@ -39,4 +39,5 @@ public class ExampleService
 
         LogMessage.Forecast(logger, forecast, null);
     }
+
 }

@@ -114,9 +114,11 @@ Write-Host "Final: $ans$($ans % 11)"
 $w,$s=0; [System.Security.Cryptography.SHA1CryptoServiceProvider]::new().ComputeHash([Text.Encoding]::UTF8.GetBytes("MiniTools.Web.Controllers.LoginController")).ForEach({$_*++$w}).ForEach({$s+=$_});"$s$($s%11)"
 ```
 
+```ps1
 function calcId($text) {
     $w,$s=0; [System.Security.Cryptography.SHA1CryptoServiceProvider]::new().ComputeHash([Text.Encoding]::UTF8.GetBytes($text)).ForEach({$_*++$w}).ForEach({$s+=$_});"$s$($s%11)" 
 }
+```
 
 Test
 "MiniTools.Web.Controllers.LoginController" should give = 251394

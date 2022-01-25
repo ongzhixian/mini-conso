@@ -37,17 +37,20 @@ internal static class AppStartupService
 
             services.AddHttpClient();
             services.AddHttpClient<IExampleHttpClient, ExampleHttpClient>();
+            services.AddHttpClient<IAuthenticationHttpClient, AuthenticationHttpClient>();
 
             // RegisterCaching(services)
             //services.AddMemoryCache(); // default IMemoryCache implementation
 
             // RegisterServices(services)
             services.AddSingleton<ExampleService>();
+            services.AddSingleton<AuthenticationService>();
 
             // RegisterHostedServices(services)
             // N/A
 
         });
+
 
     private static void RegisterConfigurationInstances(HostBuilderContext host, IServiceCollection services)
     {
@@ -55,5 +58,15 @@ internal static class AppStartupService
 
         services.Configure<HttpClientSetting>("HttpClients:ExampleWeatherForecast", host.Configuration.GetSection("HttpClients:ExampleWeatherForecast"));
 
+        services.Configure<HttpClientSetting>("HttpClients:Authentication", host.Configuration.GetSection("HttpClients:Authentication"));
+
     }
+}
+
+[ExcludeFromCodeCoverage]
+public static class HttpClientKey
+{
+    public const string WeatherForecast = "HttpClients:ExampleWeatherForecast";
+
+    public const string Authentication = "HttpClients:Authentication";
 }
