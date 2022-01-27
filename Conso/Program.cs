@@ -30,5 +30,8 @@ LogProgramMessage.ApplicationStart(logger, null);
 var service = host.Services.GetRequiredService<ExampleService>();
 await service.DoWorkAsync();
 
+foreach (var item in args) {
+    Console.WriteLine(item);
+}
 
 LogProgramMessage.ApplicationEnd(logger, null);

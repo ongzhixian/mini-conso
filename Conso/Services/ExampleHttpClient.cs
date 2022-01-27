@@ -30,7 +30,7 @@ public class ExampleHttpClient : IExampleHttpClient
         
         this.httpClient = httpClient;
 
-        var httpClientSetting = optionsMonitor.Get("HttpClients:ExampleWeatherForecast");
+        var httpClientSetting = optionsMonitor.Get(HttpClientName.WeatherForecast);
 
         httpClientSetting.EnsureIsValid();
 

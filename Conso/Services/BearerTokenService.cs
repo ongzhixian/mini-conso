@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using Conso.Models;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Mini.Common.Responses;
 
 namespace Conso.Services
@@ -15,6 +17,7 @@ namespace Conso.Services
         private readonly ILogger<BearerTokenService> logger;
         private readonly IMemoryCache cache;
         private readonly IAuthenticationHttpClient authenticationHttpClient;
+        private readonly UserCredentialSetting userCredentialSetting;
 
         private static class LogMessage
         {
@@ -27,11 +30,13 @@ namespace Conso.Services
                 LogLevel.Information, new EventId(240405, "Retrieved null LoginResponse"), "LoginResponse {LoginResponse}");
         }
 
-        public BearerTokenService(ILogger<BearerTokenService>? logger, IMemoryCache? cache, IAuthenticationHttpClient? authenticationHttpClient)
+        public BearerTokenService(ILogger<BearerTokenService>? logger, IMemoryCache? cache, 
+            IAuthenticationHttpClient? authenticationHttpClient, IOptions<UserCredentialSetting> userCredentialSetting)
         {
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
             this.authenticationHttpClient = authenticationHttpClient ?? throw new ArgumentNullException(nameof(authenticationHttpClient));
+            this.userCredentialSetting = userCredentialSetting.Value;
         }
 
         public async Task<string> GetBearerTokenAsync()
@@ -39,7 +44,7 @@ namespace Conso.Services
             var jwt = (string)cache.Get(CacheKey.BEARER_TOKEN);
 
             while (string.IsNullOrWhiteSpace(jwt)) {
-                var response = await authenticationHttpClient.GetJwt("someUsername", "somePassword");
+                var response = await authenticationHttpClient.GetJwt(userCredentialSetting.Username, userCredentialSetting.Password);
 
                 if (response == null) {
                     LogMessage.RetrievedNullLoginResponse(logger, response, null);

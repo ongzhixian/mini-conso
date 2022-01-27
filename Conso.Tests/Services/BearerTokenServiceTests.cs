@@ -10,6 +10,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Memory;
 using Mini.Common.Responses;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Extensions.Options;
+using Conso.Models;
 
 namespace Conso.Services.Tests
 {
@@ -19,6 +21,7 @@ namespace Conso.Services.Tests
         private Mock<ILogger<BearerTokenService>> mockLogger = new();
         private Mock<IMemoryCache> mockCache = new();
         private Mock<IAuthenticationHttpClient> mockClient = new();
+        private Mock<IOptions<UserCredentialSetting>> mockUserCredentialSetting = new();
 
         [TestInitialize]
         public void BeforeEachTest()
@@ -26,12 +29,13 @@ namespace Conso.Services.Tests
             mockLogger = new Mock<ILogger<BearerTokenService>>();
             mockCache = new Mock<IMemoryCache>();
             mockClient = new Mock<IAuthenticationHttpClient>();
+            mockUserCredentialSetting = new();
         }
 
         [TestMethod()]
         public void BearerTokenServiceTest()
         {
-            BearerTokenService service = new(mockLogger.Object, mockCache.Object, mockClient.Object);
+            BearerTokenService service = new(mockLogger.Object, mockCache.Object, mockClient.Object, mockUserCredentialSetting.Object);
             
             Assert.IsNotNull(service);
         }
@@ -41,7 +45,7 @@ namespace Conso.Services.Tests
         public void BearerTokenServiceNullLoggerTest()
         {
             ArgumentNullException? ex = Assert.ThrowsException<ArgumentNullException>(() =>
-                new BearerTokenService(null, mockCache.Object, mockClient.Object)
+                new BearerTokenService(null, mockCache.Object, mockClient.Object, mockUserCredentialSetting.Object)
             );
 
             Assert.IsNotNull(ex);
@@ -53,7 +57,7 @@ namespace Conso.Services.Tests
         public void BearerTokenServiceNullClientTest()
         {
             ArgumentNullException? ex = Assert.ThrowsException<ArgumentNullException>(() =>
-                new BearerTokenService(mockLogger.Object, mockCache.Object, null)
+                new BearerTokenService(mockLogger.Object, mockCache.Object, null, mockUserCredentialSetting.Object)
             );
 
             Assert.IsNotNull(ex);
@@ -65,7 +69,7 @@ namespace Conso.Services.Tests
         public void BearerTokenServiceNullCacheTest()
         {
             ArgumentNullException? ex = Assert.ThrowsException<ArgumentNullException>(() =>
-                new BearerTokenService(mockLogger.Object, null, mockClient.Object)
+                new BearerTokenService(mockLogger.Object, null, mockClient.Object, mockUserCredentialSetting.Object)
             );
 
             Assert.IsNotNull(ex);
@@ -81,9 +85,15 @@ namespace Conso.Services.Tests
                 Jwt = "someJwt"
             });
 
+            mockUserCredentialSetting.Setup(m => m.Value).Returns(new UserCredentialSetting
+            {
+                Username = "someUsername",
+                Password = "somePassword"
+            });
+
             mockCache.Setup(m => m.CreateEntry(It.IsAny<object>())).Returns(Mock.Of<ICacheEntry>);
 
-            BearerTokenService service = new(mockLogger.Object, mockCache.Object, mockClient.Object);
+            BearerTokenService service = new(mockLogger.Object, mockCache.Object, mockClient.Object, mockUserCredentialSetting.Object);
 
             string result = await service.GetBearerTokenAsync();
 
@@ -98,7 +108,13 @@ namespace Conso.Services.Tests
 
             mockCache.Setup(m => m.CreateEntry(It.IsAny<object>())).Returns(Mock.Of<ICacheEntry>);
 
-            BearerTokenService service = new(mockLogger.Object, mockCache.Object, mockClient.Object);
+            mockUserCredentialSetting.Setup(m => m.Value).Returns(new UserCredentialSetting
+            {
+                Username = "someUsername",
+                Password = "somePassword"
+            });
+
+            BearerTokenService service = new(mockLogger.Object, mockCache.Object, mockClient.Object, mockUserCredentialSetting.Object);
 
             string result = await service.GetBearerTokenAsync();
 
@@ -116,7 +132,7 @@ namespace Conso.Services.Tests
 
             mockCache.Setup(m => m.CreateEntry(It.IsAny<object>())).Returns(Mock.Of<ICacheEntry>);
 
-            BearerTokenService service = new(mockLogger.Object, mockCache.Object, mockClient.Object);
+            BearerTokenService service = new(mockLogger.Object, mockCache.Object, mockClient.Object, mockUserCredentialSetting.Object);
 
             service.Set("someToken", new TimeSpan(1, 0, 0));
 

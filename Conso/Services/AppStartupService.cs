@@ -59,15 +59,48 @@ internal static class AppStartupService
     {
         services.Configure<ApplicationSetting>(host.Configuration.GetSection("Application"));
 
-        services.Configure<HttpClientSetting>("HttpClients:ExampleWeatherForecast", host.Configuration.GetSection("HttpClients:ExampleWeatherForecast"));
+        services.Configure<HttpClientSetting>(HttpClientName.WeatherForecast, host.Configuration.GetSection("HttpClients:ExampleWeatherForecast"));
 
-        services.Configure<HttpClientSetting>("HttpClients:Authentication", host.Configuration.GetSection("HttpClients:Authentication"));
+        services.Configure<HttpClientSetting>(HttpClientName.Authentication, host.Configuration.GetSection("HttpClients:Authentication"));
 
+        configureUserCredential(host, services);
+
+        static void configureUserCredential(HostBuilderContext host, IServiceCollection services)
+        {
+            UserCredentialSetting credential = new();
+
+            var configSection = host.Configuration.GetSection("Application:Debug:UserCredential");
+            
+            if (configSection.Exists()) {
+                configSection.Bind(credential);
+            }
+
+            // Note: Username might be read from environment variable
+            // Order of priority:
+            // Take AppSetting
+            // Overwrite with Environment
+            // Overwrite with CLI argument
+
+            if (host.Configuration["username"] != null) {
+                credential.Username = host.Configuration["username"];
+            }
+
+            if (host.Configuration["password"] != null) {
+                credential.Username = host.Configuration["password"];
+            }
+
+            credential.EnsureIsValid();
+
+            services.Configure<UserCredentialSetting>(cred => {
+                cred.Username = credential.Username;
+                cred.Password = credential.Password;
+            });
+        }
     }
 }
 
 [ExcludeFromCodeCoverage]
-public static class HttpClientKey
+public static class HttpClientName
 {
     public const string WeatherForecast = "HttpClients:ExampleWeatherForecast";
 

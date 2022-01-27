@@ -38,7 +38,7 @@ public class AuthenticationHttpClient : IAuthenticationHttpClient
 
         this.httpClient = httpClient;
         
-        var httpClientSetting = optionsMonitor.Get("HttpClients:Authentication");
+        var httpClientSetting = optionsMonitor.Get(HttpClientName.Authentication);
 
         httpClientSetting.EnsureIsValid();
 
@@ -48,8 +48,8 @@ public class AuthenticationHttpClient : IAuthenticationHttpClient
     public async Task<LoginResponse?> GetJwt(string username, string password)
     {
         var responseMessage = await httpClient.PostAsync("/api/authentication", JsonContent.Create<LoginRequest>(new LoginRequest {
-            Username = "dev",
-            Password = "dev"
+            Username = username,
+            Password = password
         }, mediaType: new MediaTypeHeaderValue(MediaTypeNames.Application.Json)));
 
         responseMessage.EnsureSuccessStatusCode();
