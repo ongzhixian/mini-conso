@@ -70,23 +70,25 @@ internal static class AppStartupService
             UserCredentialSetting credential = new();
 
             var configSection = host.Configuration.GetSection("Application:Debug:UserCredential");
-            
+
             if (configSection.Exists()) {
                 configSection.Bind(credential);
             }
 
-            // Note: Username might be read from environment variable
-            // Order of priority:
-            // Take AppSetting
-            // Overwrite with Environment
-            // Overwrite with CLI argument
+            if (!host.HostingEnvironment.IsDevelopment()) {
+                // Note: Username might be read from environment variable
+                // Order of priority:
+                // Take AppSetting
+                // Overwrite with Environment
+                // Overwrite with CLI argument
 
-            if (host.Configuration["username"] != null) {
-                credential.Username = host.Configuration["username"];
-            }
+                if (host.Configuration["username"] != null) {
+                    credential.Username = host.Configuration["username"];
+                }
 
-            if (host.Configuration["password"] != null) {
-                credential.Username = host.Configuration["password"];
+                if (host.Configuration["password"] != null) {
+                    credential.Username = host.Configuration["password"];
+                }
             }
 
             credential.EnsureIsValid();
