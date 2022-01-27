@@ -44,7 +44,8 @@ internal static class AppStartupService
             services.AddMemoryCache(); // default IMemoryCache implementation
 
             // RegisterServices(services)
-            
+
+            services.AddSingleton<IBearerTokenService, BearerTokenService>();
             services.AddSingleton<ExampleService>();
             services.AddSingleton<AuthenticationService>();
 

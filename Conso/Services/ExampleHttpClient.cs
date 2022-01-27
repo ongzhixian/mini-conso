@@ -1,7 +1,7 @@
 ﻿using Conso.Models;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Net.Http.Headers;
 
 namespace Conso.Services;
 
@@ -14,32 +14,36 @@ public class ExampleHttpClient : IExampleHttpClient
 {
     private readonly ILogger<ExampleHttpClient> logger;
     private readonly HttpClient httpClient;
-    private readonly IMemoryCache cache;
+    private readonly IBearerTokenService bearerTokenService;
 
     private static class LogMessage
     {
+        // Conso.Services.ExampleHttpClient:Weather forcast retrieved
         internal readonly static Action<ILogger, string, Exception?> RetrievedContent = LoggerMessage.Define<string>(
             LogLevel.Information, new EventId(285285, "Weather forcast retrieved"), "Weather forecast {weatherForecast}");
     }
 
-    public ExampleHttpClient(ILogger<ExampleHttpClient> logger, HttpClient httpClient, IOptionsMonitor<HttpClientSetting> optionsMonitor, IMemoryCache cache)
+    public ExampleHttpClient(ILogger<ExampleHttpClient>? logger, HttpClient httpClient, 
+        IOptionsMonitor<HttpClientSetting> optionsMonitor, IBearerTokenService? bearerTokenService)
     {
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         
         this.httpClient = httpClient;
 
-        HttpClientSetting httpClientSetting = optionsMonitor.Get("HttpClients:ExampleWeatherForecast") ?? throw new NullReferenceException(nameof(httpClientSetting));
-        
+        var httpClientSetting = optionsMonitor.Get("HttpClients:ExampleWeatherForecast");
+
+        httpClientSetting.EnsureIsValid();
+
         httpClient.BaseAddress = new Uri(httpClientSetting.BaseAddress);
 
-        this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
+        this.bearerTokenService = bearerTokenService ?? throw new ArgumentNullException(nameof(bearerTokenService));
     }
 
     public async Task<string> GetWeatherForcastAsync()
     {
-        string jwt = (string)cache.Get(CacheKey.JWT);
+        var bearerToken = await bearerTokenService.GetBearerTokenAsync();
 
-        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", jwt);
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
 
         var responseMessage = await httpClient.GetAsync("/WeatherForecast");
 

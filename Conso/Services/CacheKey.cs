@@ -2,5 +2,5 @@
 
 internal static class CacheKey
 {
-    public const string JWT = "JWT";
+    public const string BEARER_TOKEN = "BEARER_TOKEN";
 }

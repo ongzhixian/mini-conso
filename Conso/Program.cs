@@ -24,13 +24,11 @@ var logger = host.Services.GetRequiredService<ILogger<Program>>();
 
 LogProgramMessage.ApplicationStart(logger, null);
 
-
-var authService = host.Services.GetRequiredService<AuthenticationService>();
-await authService.DoWorkAsync();
+//var authService = host.Services.GetRequiredService<AuthenticationService>()
+//await authService.DoWorkAsync()
 
 var service = host.Services.GetRequiredService<ExampleService>();
 await service.DoWorkAsync();
-
 
 
 LogProgramMessage.ApplicationEnd(logger, null);

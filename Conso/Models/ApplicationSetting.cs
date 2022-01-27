@@ -1,5 +1,8 @@
-﻿namespace Conso.Models;
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace Conso.Models;
+
+[ExcludeFromCodeCoverage]
 public class ApplicationSetting
 {
     public string Version { get; set; } = string.Empty;
