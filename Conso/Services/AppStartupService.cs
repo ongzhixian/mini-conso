@@ -47,6 +47,7 @@ internal static class AppStartupService
 
             services.AddSingleton<IBearerTokenService, BearerTokenService>();
             services.AddSingleton<ExampleService>();
+            services.AddSingleton<ExampleRsaService>();
             services.AddSingleton<AuthenticationService>();
 
             // RegisterHostedServices(services)
